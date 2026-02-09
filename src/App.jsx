@@ -26,7 +26,9 @@ import {
   Loader2,
   TrendingUp,
   Home,
-  RefreshCw
+  RefreshCw,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 // --- THEME CONSTANTS ---
@@ -131,6 +133,7 @@ const App = () => {
   const [intellectLevel, setIntellectLevel] = useState(80);
   const [ageProgress, setAgeProgress] = useState(0);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [showBuddhiOverlay, setShowBuddhiOverlay] = useState(false);
 
   // AI & Chat States
   const [chatOpen, setChatOpen] = useState(false);
@@ -139,13 +142,17 @@ const App = () => {
   const [isChatLoading, setIsChatLoading] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      if (window.innerWidth < 1024) setIsSidebarOpen(false);
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const activeModelData = GITA_DATA.flatMap(ch => ch.models).find(m => m.id === activeModelId);
 
+  // --- GEMINI API ENGINE ---
   const callGemini = async (prompt, sys) => {
     let retries = 0;
     while (retries < 3) {
@@ -194,46 +201,47 @@ const App = () => {
     if (windowWidth < 1024) setIsSidebarOpen(false);
   };
 
+  // --- MODEL RENDERING LOGIC ---
   const ModelRenderer = () => {
     if (!activeModelId) {
       return (
-        <div className="flex flex-col items-center p-10 w-full max-w-6xl mx-auto select-none animate-in fade-in duration-500">
-          <div className="text-center mb-16">
-            <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-8 border-[4px] border-dashed border-saffron/40 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(245,158,11,0.2)]">
-              <Compass size={windowWidth < 640 ? 50 : 80} className="text-saffron" />
+        <div className="flex flex-col items-center p-6 sm:p-10 w-full max-w-6xl mx-auto select-none animate-in fade-in duration-500">
+          <div className="text-center mb-12 sm:mb-16">
+            <div className="w-24 h-24 sm:w-40 sm:h-40 mx-auto mb-8 border-[3px] border-dashed border-saffron/40 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(245,158,11,0.2)]">
+              <Compass size={windowWidth < 640 ? 40 : 80} className="text-saffron" />
             </div>
-            <h2 className="text-4xl sm:text-6xl font-black tracking-[0.2em] text-white uppercase mb-6 leading-tight drop-shadow-2xl">
+            <h2 className="text-3xl sm:text-6xl font-black tracking-[0.2em] text-white uppercase mb-4 sm:mb-6 leading-tight drop-shadow-2xl">
               Gita Visual Guide
             </h2>
-            <p className="text-white/80 max-w-3xl mx-auto italic text-xl sm:text-2xl leading-relaxed font-serif px-4">
+            <p className="text-white/80 max-w-3xl mx-auto italic text-lg sm:text-2xl leading-relaxed font-serif px-4">
               "A digital pilgrimage through the analytical and meditative frameworks of the Gita."
             </p>
           </div>
 
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {GITA_DATA.flatMap(ch => ch.models).map((model) => (
               <button
                 key={model.id}
                 onClick={() => handleModelSelect(model.id)}
-                className="group relative flex flex-col p-8 bg-indigo-950/40 border border-indigo-900 rounded-[2rem] text-left transition-all hover:bg-indigo-900/60 hover:border-saffron/50 hover:scale-[1.03] shadow-xl"
+                className="group relative flex flex-col p-6 sm:p-8 bg-indigo-950/40 border border-indigo-900 rounded-[1.5rem] sm:rounded-[2rem] text-left transition-all hover:bg-indigo-900/60 hover:border-saffron/50 hover:scale-[1.03] shadow-xl"
               >
-                <div className="flex justify-between items-start mb-6">
-                  <div className="p-3 bg-indigo-900 rounded-2xl text-saffron border border-indigo-800 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-                    {model.id === 'atma-body' ? <Layers size={24} /> :
-                      model.id === 'sat-asat' ? <Triangle size={24} /> :
-                        model.id === 'karma-yoga-cycle' ? <RotateCcw size={24} /> :
-                          <Waves size={24} />}
+                <div className="flex justify-between items-start mb-4 sm:mb-6">
+                  <div className="p-2 sm:p-3 bg-indigo-900 rounded-xl sm:rounded-2xl text-saffron border border-indigo-800 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                    {model.id === 'atma-body' ? <Layers size={20} /> :
+                      model.id === 'sat-asat' ? <Triangle size={20} /> :
+                        model.id === 'karma-yoga-cycle' ? <RotateCcw size={20} /> :
+                          <Waves size={20} />}
                   </div>
                   {model.status === 'ready' ? (
-                    <span className="px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-lg text-[10px] font-black text-green-500 uppercase tracking-widest">Ready</span>
+                    <span className="px-2 py-0.5 bg-green-500/10 border border-green-500/30 rounded text-[9px] font-black text-green-500 uppercase tracking-widest">Ready</span>
                   ) : (
-                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-white/30 uppercase tracking-widest">Planned</span>
+                    <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-black text-white/30 uppercase tracking-widest">Planned</span>
                   )}
                 </div>
-                <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2 group-hover:text-saffron transition-colors">{model.name}</h3>
-                <p className="text-sm text-white/60 font-medium leading-relaxed mb-4">{model.description}</p>
-                <div className="mt-auto flex items-center text-[10px] font-black text-saffron uppercase tracking-widest gap-2">
-                  Explore Framework <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-tight mb-2 group-hover:text-saffron transition-colors">{model.name}</h3>
+                <p className="text-xs sm:text-sm text-white/60 font-medium leading-relaxed mb-4 line-clamp-2">{model.description}</p>
+                <div className="mt-auto flex items-center text-[9px] font-black text-saffron uppercase tracking-widest gap-2">
+                  Explore <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
                 </div>
               </button>
             ))}
@@ -242,35 +250,36 @@ const App = () => {
       );
     }
 
+    // Individual Models with increased top padding to avoid header overlap
     if (activeModelId === 'atma-body') {
       return (
-        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-32">
-          <div className="relative flex flex-col items-center justify-center p-12 bg-indigo-950 rounded-[3rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[700px]">
-            <div className="absolute top-10 left-10 flex items-center gap-4 text-white">
-              <Layers className="text-saffron" size={32} />
-              <h3 className="font-black text-2xl uppercase tracking-tighter">Atma vs Body</h3>
+        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-28 sm:pt-32">
+          <div className="relative flex flex-col items-center justify-center p-8 sm:p-12 bg-indigo-950 rounded-[2.5rem] sm:rounded-[3rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[700px]">
+            <div className="absolute top-8 left-8 flex items-center gap-3 text-white">
+              <Layers className="text-saffron" size={24} />
+              <h3 className="font-black text-xl uppercase tracking-tighter">Atma vs Body</h3>
             </div>
-            <div className="flex flex-col sm:flex-row w-full mt-24 gap-12 items-center">
-              <div className="relative w-40 h-[380px] flex-shrink-0">
+            <div className="flex flex-col sm:flex-row w-full mt-20 gap-8 sm:gap-12 items-center">
+              <div className="relative w-32 sm:w-40 h-[300px] sm:h-[380px] flex-shrink-0">
                 <div className="absolute inset-0 bg-indigo-800/20 border-2 border-indigo-400/20 transition-all duration-1000" style={{ clipPath: 'polygon(50% 0%, 80% 10%, 95% 35%, 85% 70%, 75% 100%, 25% 100%, 15% 70%, 5% 35%, 20% 10%)', opacity: 1 - (ageProgress * 0.7), filter: `grayscale(${ageProgress})` }} />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="rounded-full bg-saffron shadow-[0_0_40px_#f59e0b] w-20 h-20 flex items-center justify-center text-[10px] font-black text-indigo-950 uppercase">Atma</div>
+                  <div className="rounded-full bg-saffron shadow-[0_0_40px_#f59e0b] w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center text-[10px] font-black text-indigo-950 uppercase">Atma</div>
                 </div>
               </div>
-              <div className="flex-1 w-full space-y-6">
-                <div className="p-8 rounded-[2rem] border border-red-500/20 bg-red-500/5">
-                  <span className="text-[10px] uppercase font-black text-red-400 tracking-widest block mb-1">Maya (Body)</span>
-                  <p className="text-lg text-white font-bold">Temporary Container</p>
+              <div className="flex-1 w-full space-y-4 sm:space-y-6">
+                <div className="p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border border-red-500/20 bg-red-500/5 text-left w-full">
+                  <span className="text-[9px] uppercase font-black text-red-400 tracking-widest block mb-1">Maya (Body)</span>
+                  <p className="text-base sm:text-lg text-white font-bold">Temporary Container</p>
                 </div>
-                <div className="p-8 rounded-[2rem] border border-saffron/30 bg-saffron/5 shadow-inner">
-                  <span className="text-[10px] uppercase font-black text-saffron tracking-widest block mb-1">Sat (Soul)</span>
-                  <p className="text-lg text-white font-bold">Indestructible Core</p>
+                <div className="p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] border border-saffron/30 bg-saffron/5 shadow-inner text-left w-full">
+                  <span className="text-[9px] uppercase font-black text-saffron tracking-widest block mb-1">Sat (Soul)</span>
+                  <p className="text-base sm:text-lg text-white font-bold">Indestructible Core</p>
                 </div>
               </div>
             </div>
-            <div className="w-full mt-12 px-2">
-              <div className="flex justify-between text-white text-[10px] font-bold uppercase tracking-widest mb-4"><span>Simulation</span><span>Verse 2.22</span></div>
-              <input type="range" className="w-full h-2 bg-indigo-900 rounded-full appearance-none cursor-pointer accent-saffron" value={ageProgress * 100} onChange={(e) => setAgeProgress(e.target.value / 100)} />
+            <div className="w-full mt-10 px-2">
+              <div className="flex justify-between text-white text-[9px] font-bold uppercase tracking-widest mb-4"><span>Simulation</span><span>Verse 2.22</span></div>
+              <input type="range" className="w-full h-1.5 bg-indigo-900 rounded-full appearance-none cursor-pointer accent-saffron" value={ageProgress * 100} onChange={(e) => setAgeProgress(e.target.value / 100)} />
             </div>
           </div>
           <VerseSidebar verses={activeModelData?.verses} />
@@ -280,53 +289,46 @@ const App = () => {
 
     if (activeModelId === 'karma-yoga-cycle') {
       const steps = [
-        { label: "Right Action", pos: "top" },
-        { label: "Detachment", pos: "right" },
-        { label: "Equanimity", pos: "bottom" },
-        { label: "Inner Purity", pos: "left" }
+        { label: "Action", icon: <RefreshCw size={14} /> },
+        { label: "Detachment", icon: <Zap size={14} /> },
+        { label: "Equanimity", icon: <Layers size={14} /> },
+        { label: "Purity", icon: <Sparkles size={14} /> }
       ];
       return (
-        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-32">
-          <div className="relative flex flex-col items-center justify-center p-12 bg-indigo-950 rounded-[3rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[700px]">
-            <div className="absolute top-10 left-10 flex items-center gap-4 text-white">
-              <RotateCcw className="text-saffron" size={32} />
-              <h3 className="font-black text-2xl uppercase tracking-tighter">Karma Cycle</h3>
+        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-28 sm:pt-32">
+          <div className="relative flex flex-col items-center justify-center p-8 sm:p-12 bg-indigo-950 rounded-[2.5rem] sm:rounded-[3rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[700px]">
+            <div className="absolute top-8 left-8 flex items-center gap-3 text-white">
+              <RotateCcw className="text-saffron" size={24} />
+              <h3 className="font-black text-xl uppercase tracking-tighter">Karma Cycle</h3>
             </div>
-            <div className="relative w-72 h-72 sm:w-96 sm:h-96 mt-28 mb-12 flex items-center justify-center">
-              {/* Circular Path */}
-              <div className="absolute inset-0 rounded-full border-2 border-dashed border-indigo-700/50 animate-spin-slow" />
-              <div className="absolute inset-4 rounded-full border border-saffron/20" />
-
-              {/* Center Core */}
-              <div className="z-10 w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-indigo-900 border-2 border-saffron/40 flex flex-col items-center justify-center shadow-[0_0_50px_rgba(245,158,11,0.15)]">
-                <RefreshCw className={`text-saffron mb-2 ${intellectLevel > 50 ? 'animate-spin' : ''}`} style={{ animationDuration: `${6 - (intellectLevel / 20)}s` }} size={24} />
-                <span className="text-[10px] font-black text-white uppercase tracking-widest text-center">Skill in<br />Action</span>
+            <div className="relative w-64 h-64 sm:w-96 sm:h-96 mt-20 mb-8 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border border-dashed border-indigo-700/50 animate-spin-slow" />
+              <div className="z-10 w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-indigo-900 border border-saffron/40 flex flex-col items-center justify-center shadow-xl">
+                <RefreshCw className={`text-saffron mb-1 sm:mb-2 ${intellectLevel > 50 ? 'animate-spin' : ''}`} style={{ animationDuration: `${6 - (intellectLevel / 20)}s` }} size={windowWidth < 640 ? 18 : 24} />
+                <span className="text-[8px] sm:text-[10px] font-black text-white uppercase tracking-widest text-center">Skill in<br />Action</span>
               </div>
 
-              {/* Orbiting Nodes */}
               {steps.map((step, i) => {
                 const angle = i * 90;
+                const dist = windowWidth < 640 ? 120 : 180;
                 return (
                   <div key={i} className="absolute w-full h-full flex items-center justify-center" style={{ transform: `rotate(${angle}deg)` }}>
-                    <div className="flex flex-col items-center" style={{ transform: `translateY(-180px) rotate(-${angle}deg)` }}>
-                      <div className={`w-10 h-10 rounded-full bg-indigo-950 border-2 border-saffron flex items-center justify-center shadow-lg`}>
-                        <Zap size={16} className="text-saffron" />
+                    <div className="flex flex-col items-center" style={{ transform: `translateY(-${dist}px) rotate(-${angle}deg)` }}>
+                      <div className="w-8 h-8 rounded-full bg-indigo-950 border border-saffron flex items-center justify-center shadow-lg">
+                        {step.icon}
                       </div>
-                      <div className="mt-4 px-4 py-1.5 bg-indigo-900 border border-saffron/30 rounded-full shadow-2xl">
-                        <span className="text-[10px] font-black text-white uppercase tracking-widest whitespace-nowrap">{step.label}</span>
+                      <div className="mt-3 px-3 py-1 bg-indigo-900 border border-saffron/20 rounded-full shadow-lg">
+                        <span className="text-[8px] sm:text-[10px] font-black text-white uppercase tracking-widest whitespace-nowrap">{step.label}</span>
                       </div>
                     </div>
                   </div>
                 );
               })}
             </div>
-            <div className="p-8 bg-indigo-900/40 rounded-3xl border-l-4 border-saffron w-full">
-              <Quote className="text-saffron/40 mb-3" size={24} />
-              <p className="text-xl text-white italic font-serif leading-relaxed mb-4">"{activeModelData.verses[0].text}"</p>
-              <div className="flex justify-between items-center text-[10px] font-black text-saffron uppercase tracking-[0.2em]">
-                <span>Verse {activeModelData.verses[0].ref}</span>
-                <span className="px-3 py-1 bg-saffron text-indigo-950 rounded flex items-center gap-2">Skill in Action <Sparkles size={10} /></span>
-              </div>
+            <div className="p-6 sm:p-8 bg-indigo-900/40 rounded-[2rem] border-l-4 border-saffron w-full text-left">
+              <Quote className="text-saffron/40 mb-2" size={20} />
+              <p className="text-base sm:text-xl text-white italic font-serif leading-relaxed mb-4">"{activeModelData.verses[0].text}"</p>
+              <span className="text-[10px] font-black text-saffron uppercase tracking-[0.2em]">Verse {activeModelData.verses[0].ref}</span>
             </div>
           </div>
           <VerseSidebar verses={activeModelData?.verses} />
@@ -337,32 +339,30 @@ const App = () => {
     if (activeModelId === 'stitha-prajna') {
       const q = activeModelData?.qualities?.[selectedQualityIndex] || { name: "Wisdom", highlight: "Detached Awareness", verse: "2.54" };
       return (
-        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1500px] p-6 animate-in fade-in duration-500 pt-32">
-          <div className="relative flex flex-col items-center justify-center p-12 bg-indigo-950 rounded-[3rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[750px]">
-            <div className="absolute top-10 left-10 flex items-center gap-4 text-white">
-              <Waves className="text-saffron" size={32} />
-              <h3 className="font-black text-2xl uppercase tracking-tighter">Mastery Ladder</h3>
+        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1500px] p-6 animate-in fade-in duration-500 pt-28 sm:pt-32">
+          <div className="relative flex flex-col items-center justify-center p-8 sm:p-12 bg-indigo-950 rounded-[2.5rem] sm:rounded-[3rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[750px]">
+            <div className="absolute top-8 left-8 flex items-center gap-3 text-white">
+              <Waves className="text-saffron" size={24} />
+              <h3 className="font-black text-xl uppercase tracking-tighter">Mastery Ladder</h3>
             </div>
-            <div className="relative w-full h-[550px] sm:w-[650px] flex items-center justify-center mt-20">
-              <div className="absolute w-40 h-40 rounded-full border-2 border-saffron/30 bg-indigo-900/60 flex items-center justify-center text-saffron font-black text-xs uppercase tracking-widest text-center shadow-2xl">Steady<br />Mind</div>
+            <div className="relative w-full h-[400px] sm:h-[600px] flex items-center justify-center mt-16 sm:mt-20">
+              <div className="absolute w-24 h-24 sm:w-40 sm:h-40 rounded-full border border-saffron/20 bg-indigo-900/60 flex items-center justify-center text-saffron font-black text-[9px] sm:text-xs uppercase tracking-widest text-center">Steady<br />Mind</div>
               {activeModelData?.qualities?.map((item, i) => {
                 const angle = (i * 360) / 18;
                 const active = selectedQualityIndex === i;
-                const dist = windowWidth < 640 ? 145 : 130;
+                const dist = windowWidth < 640 ? 115 : 130;
                 return (
                   <button key={i} onClick={() => setSelectedQualityIndex(i)} className="absolute top-1/2 left-1/2 origin-left transition-all duration-300" style={{ transform: `rotate(${angle}deg) translateX(${dist}px)` }}>
-                    <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase transition-all ${active ? 'bg-saffron text-indigo-950 border-white scale-125 z-50 shadow-[0_0_30px_#f59e0b]' : 'bg-indigo-900/60 text-white border-indigo-500/30 hover:border-saffron/50'}`} style={{ transform: `rotate(-${angle}deg)` }}>
+                    <div className={`px-2 sm:px-4 py-1 sm:py-1.5 rounded-full border text-[7px] sm:text-[9px] font-black uppercase transition-all ${active ? 'bg-saffron text-indigo-950 border-white scale-125 z-50 shadow-lg' : 'bg-indigo-900/60 text-white border-indigo-500/30 hover:border-saffron/50'}`} style={{ transform: `rotate(-${angle}deg)` }}>
                       {item.name}
                     </div>
                   </button>
                 );
               })}
             </div>
-            <div className="mt-12 p-8 bg-indigo-900/80 border border-saffron/30 rounded-[2.5rem] w-full text-white shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-6 opacity-5"><TrendingUp size={80} className="text-saffron" /></div>
-              <h2 className="text-3xl font-black uppercase mb-3 text-saffron tracking-tighter">{q.name}</h2>
-              <p className="text-xl italic font-serif leading-relaxed opacity-90 border-l-4 border-saffron pl-6">"{q.highlight}"</p>
-              <div className="mt-5 flex gap-3"><span className="px-4 py-1.5 bg-saffron text-indigo-950 text-xs font-black rounded-lg">Verse {q.verse}</span></div>
+            <div className="mt-8 p-6 sm:p-8 bg-indigo-900/80 border border-saffron/30 rounded-[2rem] w-full text-white shadow-2xl relative text-left">
+              <h2 className="text-xl sm:text-3xl font-black uppercase mb-2 text-saffron tracking-tighter">{q.name}</h2>
+              <p className="text-base sm:text-xl italic font-serif leading-relaxed opacity-90 border-l-2 border-saffron pl-4">"{q.highlight}"</p>
             </div>
           </div>
           <VerseSidebar verses={activeModelData?.verses} />
@@ -373,29 +373,28 @@ const App = () => {
     if (activeModelId === 'sat-asat') {
       const selectedLayer = activeModelData?.layers?.[selectedLayerIndex] || { name: "SAT", desc: "Eternal substrate" };
       return (
-        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-32">
-          <div className="relative flex flex-col items-center justify-center p-12 bg-indigo-950 rounded-[4rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[700px]">
-            <div className="absolute top-12 left-12 flex items-center gap-5 text-white">
-              <Triangle className="text-saffron" size={32} />
-              <h3 className="font-black text-2xl uppercase tracking-tighter">Reality Pyramid</h3>
+        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-28 sm:pt-32">
+          <div className="relative flex flex-col items-center justify-center p-8 sm:p-12 bg-indigo-950 rounded-[2.5rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[700px]">
+            <div className="absolute top-8 left-8 flex items-center gap-3 text-white">
+              <Triangle className="text-saffron" size={24} />
+              <h3 className="font-black text-xl uppercase tracking-tighter">Reality Pyramid</h3>
             </div>
-            <div className="relative w-full h-[400px] mt-28 flex flex-col items-center justify-center gap-4">
+            <div className="relative w-full h-[300px] sm:h-[400px] mt-24 flex flex-col items-center justify-center gap-3 sm:gap-4">
               {activeModelData?.layers?.map((layer, i) => {
                 const isActive = selectedLayerIndex === i;
-                const width = [140, 240, 360][i];
+                const width = windowWidth < 640 ? [100, 180, 260][i] : [140, 240, 360][i];
                 return (
                   <button key={layer.id} onClick={() => setSelectedLayerIndex(i)} className="group transition-all duration-500" style={{ width: `${width}px` }}>
-                    <div className={`w-full h-24 border-2 transition-all flex flex-col items-center justify-center rounded-[1.5rem] ${isActive ? 'bg-indigo-600/30 border-saffron shadow-2xl' : 'bg-indigo-950/60 border-indigo-500/30 hover:border-indigo-400'}`}>
-                      <span className={`text-xs font-black tracking-[0.2em] mb-1 ${isActive ? 'text-saffron' : 'text-white'}`}>{layer.name}</span>
-                      {isActive && <div className="w-12 h-[2px] bg-saffron rounded-full animate-pulse" />}
+                    <div className={`w-full h-16 sm:h-24 border transition-all flex flex-col items-center justify-center rounded-xl sm:rounded-[1.5rem] ${isActive ? 'bg-indigo-600/30 border-saffron shadow-lg' : 'bg-indigo-950/60 border-indigo-500/30 hover:border-indigo-400'}`}>
+                      <span className={`text-[10px] sm:text-xs font-black tracking-[0.2em] mb-1 ${isActive ? 'text-saffron' : 'text-white'}`}>{layer.name}</span>
                     </div>
                   </button>
                 )
               })}
             </div>
-            <div className="mt-12 p-8 bg-indigo-900 border border-indigo-400/20 rounded-[2rem] w-full text-white">
-              <h2 className="text-3xl font-black uppercase mb-2 text-saffron">{selectedLayer.name}</h2>
-              <p className="text-lg italic font-serif leading-relaxed border-l-4 border-saffron pl-6">{selectedLayer.desc}</p>
+            <div className="mt-8 p-6 sm:p-8 bg-indigo-900 border border-indigo-400/20 rounded-[1.5rem] w-full text-white text-left">
+              <h2 className="text-xl sm:text-3xl font-black uppercase mb-2 text-saffron">{selectedLayer.name}</h2>
+              <p className="text-sm sm:text-lg italic font-serif leading-relaxed border-l-2 border-saffron pl-4">{selectedLayer.desc}</p>
             </div>
           </div>
           <VerseSidebar verses={activeModelData?.verses} />
@@ -403,28 +402,21 @@ const App = () => {
       )
     }
 
-    return (
-      <div className="flex flex-col items-center justify-center p-12 sm:p-24 text-center">
-        <div className="w-24 h-24 bg-indigo-900/60 rounded-3xl border border-indigo-500/30 flex items-center justify-center text-white/30 mb-8 animate-pulse"><Clock size={48} /></div>
-        <h2 className="text-5xl font-black text-white uppercase mb-4">{activeModelData?.name || "Model"}</h2>
-        <p className="text-white/60 text-xl italic font-serif max-w-2xl mx-auto mb-10">Developing visual architecture for this model. Scripture mapping is ongoing.</p>
-        <button onClick={resetView} className="px-10 py-4 bg-indigo-900 text-white font-black uppercase tracking-widest rounded-2xl hover:bg-indigo-800 transition-all">Go Back Home</button>
-      </div>
-    );
+    return null;
   };
 
   const VerseSidebar = ({ verses }) => (
-    <div className="w-full lg:w-[450px] space-y-8 lg:sticky lg:top-32 animate-in slide-in-from-right duration-700">
-      <div className="flex items-center gap-4 mb-4 px-4 text-white">
-        <ScrollText className="text-saffron" size={36} />
-        <h4 className="text-2xl font-black uppercase tracking-widest">Scripture</h4>
+    <div className="w-full lg:w-[400px] space-y-6 lg:sticky lg:top-32 animate-in slide-in-from-right duration-700 mt-8 lg:mt-0">
+      <div className="flex items-center gap-3 mb-2 px-4 text-white">
+        <ScrollText className="text-saffron" size={windowWidth < 640 ? 24 : 32} />
+        <h4 className="text-lg sm:text-2xl font-black uppercase tracking-widest">Scripture</h4>
       </div>
-      <div className="space-y-8 max-h-none lg:max-h-[850px] overflow-y-visible lg:overflow-y-auto pr-0 lg:pr-6 custom-scrollbar">
+      <div className="space-y-4 max-h-none lg:max-h-[700px] overflow-y-visible lg:overflow-y-auto pr-0 lg:pr-4 custom-scrollbar">
         {verses?.map((v, i) => (
-          <div key={i} className="p-10 bg-indigo-950 border border-indigo-500/30 rounded-[3rem] text-white shadow-xl hover:border-saffron/30 transition-all">
-            <span className="text-xs font-black text-saffron bg-saffron/10 border border-saffron/30 px-4 py-1.5 rounded-xl mb-6 inline-block uppercase tracking-widest leading-none">Verse {v.ref}</span>
-            <p className="text-sm text-saffronBright font-serif italic mb-6 leading-relaxed opacity-80">"{v.sanskrit}"</p>
-            <p className="text-xl leading-relaxed font-sans font-medium opacity-90 italic">"{v.text}"</p>
+          <div key={i} className="p-6 sm:p-10 bg-indigo-950/60 border border-indigo-500/30 rounded-[2rem] text-white text-left relative overflow-hidden group hover:border-saffron/30 transition-all">
+            <span className="text-[9px] font-black text-saffron bg-saffron/10 border border-saffron/30 px-3 py-1 rounded-lg mb-4 inline-block uppercase tracking-widest">Verse {v.ref}</span>
+            <p className="text-xs sm:text-sm text-saffronBright font-serif italic mb-4 opacity-80 leading-relaxed italic">"{v.sanskrit}"</p>
+            <p className="text-base sm:text-lg leading-relaxed font-sans font-medium opacity-90">"{v.text}"</p>
           </div>
         ))}
       </div>
@@ -432,45 +424,44 @@ const App = () => {
   );
 
   return (
-    <div className="flex h-screen w-screen bg-deep text-textMain overflow-hidden font-sans select-none relative">
+    <div className="flex h-screen w-screen bg-[#020617] text-textMain overflow-hidden font-sans select-none relative">
 
+      {/* DRAWER OVERLAY */}
       {isSidebarOpen && windowWidth < 1024 && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[90]" onClick={() => setIsSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[110] animate-in fade-in" onClick={() => setIsSidebarOpen(false)} />
       )}
 
-      <aside className={`fixed lg:relative flex flex-col bg-indigo-950 lg:bg-indigo-950/80 border-r border-indigo-900 transition-all duration-500 z-[100] h-full ${isSidebarOpen ? 'w-[90vw] sm:w-96 translate-x-0' : 'w-0 lg:w-24 -translate-x-full lg:translate-x-0'}`}>
-        <div className="p-8 sm:p-10 border-b border-indigo-900 flex items-center justify-between">
-          <button
-            onClick={resetView}
-            className={`flex items-center gap-5 transition-all hover:opacity-80 ${(!isSidebarOpen && windowWidth > 1024) && 'hidden'}`}
-          >
-            <div className="p-3 bg-saffron rounded-2xl shadow-xl shadow-saffron/30"><Compass size={32} className="text-white" /></div>
-            <h2 className="text-2xl font-black uppercase text-white">Library</h2>
+      {/* SIDEBAR NAVIGATION */}
+      <aside className={`fixed lg:relative flex flex-col bg-indigo-950 lg:bg-indigo-950/80 border-r border-indigo-900 transition-all duration-500 z-[120] h-full ${isSidebarOpen ? 'w-[85vw] sm:w-96 translate-x-0' : 'w-0 lg:w-20 -translate-x-full lg:translate-x-0'}`}>
+        <div className="p-6 sm:p-8 border-b border-indigo-900 flex items-center justify-between">
+          <button onClick={resetView} className={`flex items-center gap-3 transition-all hover:opacity-80 ${(!isSidebarOpen && windowWidth > 1024) && 'hidden'}`}>
+            <Compass size={24} className="text-saffron" />
+            <h2 className="text-xl font-black uppercase text-white">Library</h2>
           </button>
-          {windowWidth < 1024 && isSidebarOpen && <button onClick={() => setIsSidebarOpen(false)} className="p-2 text-white/50"><X size={28} /></button>}
-          {!isSidebarOpen && windowWidth > 1024 && <button onClick={() => setIsSidebarOpen(true)} className="p-4 text-white w-full flex justify-center hover:text-saffron transition-all"><LayoutGrid size={32} /></button>}
+          {windowWidth < 1024 && isSidebarOpen && <button onClick={() => setIsSidebarOpen(false)} className="text-white/50"><X size={24} /></button>}
+          {!isSidebarOpen && windowWidth > 1024 && <button onClick={() => setIsSidebarOpen(true)} className="p-3 text-white w-full flex justify-center hover:text-saffron transition-all"><LayoutGrid size={24} /></button>}
         </div>
 
         {isSidebarOpen && (
-          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-            <button onClick={resetView} className={`w-full text-left p-6 rounded-[2rem] flex items-center gap-4 mb-8 border border-indigo-900 hover:border-saffron/40 transition-all bg-indigo-900/20 text-white/60 hover:text-saffron`}>
-              <Home size={20} />
-              <span className="text-base font-black uppercase tracking-tight">Dashboard</span>
+          <div className="flex-1 overflow-y-auto p-6 custom-scrollbar text-left">
+            <button onClick={resetView} className="w-full text-left p-4 rounded-2xl flex items-center gap-3 mb-6 border border-indigo-900 hover:border-saffron/40 transition-all bg-indigo-900/20 text-white/60">
+              <Home size={18} />
+              <span className="text-sm font-black uppercase tracking-tight">Dashboard</span>
             </button>
 
             {GITA_DATA.map((ch) => (
-              <div key={ch.chapter} className="mb-12 text-white">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-xs bg-saffron text-indigo-950 font-black px-3 py-1 rounded-lg uppercase">CH {ch.chapter}</span>
-                  <span className="text-sm font-black uppercase tracking-widest opacity-60">{ch.title}</span>
+              <div key={ch.chapter} className="mb-8">
+                <div className="flex items-center gap-2 mb-4 text-white">
+                  <span className="text-[10px] bg-saffron text-indigo-950 font-black px-2 py-0.5 rounded leading-none uppercase">CH {ch.chapter}</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{ch.title}</span>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {ch.models.map(m => (
                     <button key={m.id} onClick={() => handleModelSelect(m.id)}
-                      className={`w-full text-left p-6 rounded-[2rem] flex items-center justify-between border transition-all ${activeModelId === m.id ? 'bg-saffron border-saffron text-indigo-950 shadow-2xl scale-[1.02]' : 'bg-indigo-950 border-indigo-900 text-white/80 hover:border-saffron/40'}`}
+                      className={`w-full text-left p-4 rounded-2xl flex items-center justify-between border transition-all ${activeModelId === m.id ? 'bg-saffron border-saffron text-indigo-950 shadow-lg' : 'bg-indigo-950/40 border-indigo-900 text-white/70 hover:border-saffron/30'}`}
                     >
-                      <span className="text-base font-black uppercase tracking-tight">{m.name}</span>
-                      <ChevronRight size={20} className={activeModelId === m.id ? 'opacity-100' : 'opacity-20'} />
+                      <span className="text-sm font-black uppercase tracking-tight">{m.name}</span>
+                      <ChevronRight size={16} className={activeModelId === m.id ? 'opacity-100' : 'opacity-20'} />
                     </button>
                   ))}
                 </div>
@@ -480,76 +471,88 @@ const App = () => {
         )}
       </aside>
 
+      {/* MAIN VIEWPORT */}
       <main className="relative flex-1 flex flex-col bg-[#020617] overflow-auto scroll-smooth custom-scrollbar">
 
+        {/* MOBILE TRIGGER */}
         {windowWidth < 1024 && !isSidebarOpen && (
-          <button onClick={() => setIsSidebarOpen(true)} className="fixed top-8 left-8 z-[80] p-4 bg-indigo-950 border border-indigo-500 rounded-2xl text-saffron shadow-2xl"><LayoutGrid size={28} /></button>
+          <button onClick={() => setIsSidebarOpen(true)} className="fixed top-6 left-6 z-[100] p-3 bg-indigo-950 border border-indigo-500/40 rounded-xl text-saffron shadow-lg"><LayoutGrid size={24} /></button>
         )}
 
-        {/* HUD: TOP TITLE BAR (FIXED COLOR & OVERLAP) */}
+        {/* HUD: TOP TITLE BAR (PREVENTS MODEL OVERLAP) */}
         <button
           onClick={resetView}
-          className={`fixed top-8 left-1/2 -translate-x-1/2 z-40 px-8 py-3 bg-indigo-950 border border-indigo-500/40 rounded-full shadow-[0_0_40px_rgba(0,0,0,0.6)] backdrop-blur-md flex items-center gap-3 transition-all hover:scale-105 active:scale-95 ${activeModelId && windowWidth < 640 ? 'opacity-0' : 'opacity-100'}`}
+          className={`fixed top-6 left-1/2 -translate-x-1/2 z-[100] px-6 py-2.5 bg-indigo-950 border border-indigo-500/40 rounded-full shadow-2xl backdrop-blur-md flex items-center gap-3 transition-all hover:scale-105 active:scale-95 ${activeModelId && windowWidth < 640 ? 'opacity-30' : 'opacity-100'}`}
         >
-          <BookOpen size={windowWidth < 640 ? 20 : 24} className="text-saffron drop-shadow-[0_0_8px_#f59e0b]" />
-          <span className="text-sm sm:text-base font-black uppercase tracking-[0.2em] text-white whitespace-nowrap">Gita Knowledge Hub</span>
+          <BookOpen size={windowWidth < 640 ? 18 : 22} className="text-saffron drop-shadow-[0_0_8px_#f59e0b]" />
+          <span className="text-xs sm:text-sm font-black uppercase tracking-[0.2em] text-white whitespace-nowrap">Gita Knowledge Hub</span>
         </button>
 
-        {/* HUD: BOTTOM CONTROLS */}
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 lg:left-[calc(384px+48px)] lg:translate-x-0 z-[60] flex items-center gap-4 p-3 bg-indigo-950 border border-indigo-500/40 rounded-[3rem] shadow-2xl backdrop-blur-md">
-          <div className="flex items-center gap-3 bg-black/80 p-2 rounded-2xl border border-indigo-800">
-            <button onClick={() => setZoom(prev => Math.max(0.4, prev - 0.1))} className="p-2 text-white hover:text-saffron transition-colors"><Minimize2 size={24} /></button>
-            <div className="px-6 text-base font-black text-white tracking-widest">{Math.round(zoom * 100)}%</div>
-            <button onClick={() => setZoom(prev => Math.min(2.5, prev + 0.1))} className="p-2 text-white hover:text-saffron transition-colors"><Maximize2 size={24} /></button>
+        {/* HUD: BOTTOM CONTROLS (COMPACT ON MOBILE) */}
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 lg:left-[calc(80px+32px)] lg:translate-x-0 z-[130] flex items-center gap-3 p-2 bg-indigo-950 border border-indigo-500/40 rounded-[2rem] shadow-2xl backdrop-blur-md">
+          <div className="flex items-center gap-1 bg-black/60 p-1 rounded-[1.5rem] border border-indigo-800">
+            <button onClick={() => setZoom(prev => Math.max(0.4, prev - 0.1))} className="p-2 text-white hover:text-saffron transition-colors"><Minimize2 size={windowWidth < 640 ? 18 : 22} /></button>
+            <div className="px-3 sm:px-5 text-xs sm:text-sm font-black text-white tracking-widest hidden sm:block">{Math.round(zoom * 100)}%</div>
+            <button onClick={() => setZoom(prev => Math.min(2.5, prev + 0.1))} className="p-2 text-white hover:text-saffron transition-colors"><Maximize2 size={windowWidth < 640 ? 18 : 22} /></button>
           </div>
           {activeModelId && (
-            <button onClick={resetView} className="px-10 py-5 bg-saffron text-white font-black text-sm uppercase rounded-[1.5rem] shadow-xl active:scale-95 flex items-center gap-3 hover:bg-saffronBright transition-all">
-              <RotateCw size={20} /> Clear Map
+            <button onClick={resetView} className="px-5 sm:px-8 py-3 bg-saffron text-white font-black text-[10px] sm:text-xs uppercase rounded-[1.25rem] shadow-xl active:scale-95 flex items-center gap-2">
+              <RotateCw size={14} /> <span className="hidden sm:inline">Clear Map</span><span className="sm:hidden">Clear</span>
             </button>
           )}
         </div>
 
         {/* MAIN CANVAS */}
-        <div className="flex-1 w-full min-h-screen flex items-center justify-center p-10 lg:p-20 relative overflow-visible">
-          <div className="transition-all duration-700 ease-out w-full flex justify-center py-20"
+        <div className="flex-1 w-full min-h-screen flex items-center justify-center p-4 relative overflow-visible">
+          <div className="transition-all duration-700 ease-out w-full flex justify-center pb-32"
             style={{
               transform: `scale(${zoom})`,
               transformOrigin: activeModelId ? 'top center' : 'center center',
               backgroundImage: `radial-gradient(${THEME.saffron}10 1.5px, transparent 0)`,
-              backgroundSize: '80px 80px'
+              backgroundSize: '100px 100px'
             }}>
             <ModelRenderer />
           </div>
         </div>
 
-        {/* BUDDHI & CHAT */}
+        {/* CONTROLS AREA (TOGGLEABLE ON MOBILE) */}
         {activeModelId && (
-          <div className="fixed bottom-32 lg:bottom-10 right-8 z-[110] flex flex-col items-end gap-6">
-            <button onClick={() => setChatOpen(!chatOpen)} className="w-16 h-16 bg-saffron rounded-full flex items-center justify-center text-white shadow-[0_0_50px_rgba(245,158,11,0.5)] hover:scale-110 active:scale-95 transition-all"><MessageSquare size={32} /></button>
-            <div className="w-80 p-8 bg-indigo-950 border border-indigo-500 rounded-[3rem] shadow-2xl backdrop-blur-lg text-white">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-3 font-black uppercase text-xs tracking-widest"><div className="w-3 h-3 rounded-full bg-saffron animate-pulse" /> Buddhi</div>
-                <span className="text-2xl font-mono font-black">{intellectLevel}%</span>
+          <div className="fixed bottom-24 lg:bottom-10 right-6 sm:right-8 z-[140] flex flex-col items-end gap-3 sm:gap-6">
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowBuddhiOverlay(!showBuddhiOverlay)}
+                className="w-12 h-12 bg-indigo-900 border border-indigo-500 rounded-full flex items-center justify-center text-saffron shadow-lg lg:hidden"
+              >
+                {showBuddhiOverlay ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+              <button onClick={() => setChatOpen(!chatOpen)} className="w-12 h-12 sm:w-16 sm:h-16 bg-saffron rounded-full flex items-center justify-center text-white shadow-[0_0_50px_rgba(245,158,11,0.5)] hover:scale-110 active:scale-95 transition-all"><MessageSquare size={windowWidth < 640 ? 20 : 32} /></button>
+            </div>
+
+            {/* Buddhi Slider - Hidden by default on mobile unless toggled */}
+            <div className={`w-[260px] sm:w-80 p-6 sm:p-8 bg-indigo-950 border border-indigo-500 rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl backdrop-blur-lg text-white transition-all duration-300 ${!showBuddhiOverlay && windowWidth < 1024 ? 'translate-y-20 opacity-0 pointer-events-none scale-95' : 'translate-y-0 opacity-100'}`}>
+              <div className="flex items-center justify-between mb-4 sm:mb-5">
+                <div className="flex items-center gap-3 font-black uppercase text-[10px] sm:text-xs tracking-widest"><div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-saffron animate-pulse" /> Buddhi</div>
+                <span className="text-lg sm:text-2xl font-mono font-black">{intellectLevel}%</span>
               </div>
-              <input type="range" className="w-full h-2 bg-deep rounded-full appearance-none cursor-pointer accent-saffron" value={intellectLevel} onChange={(e) => setIntellectLevel(e.target.value)} />
-              <p className="mt-4 text-[10px] text-white/60 uppercase font-black tracking-widest text-center">Stabilizes SAT Perception</p>
+              <input type="range" className="w-full h-1.5 bg-deep rounded-full appearance-none cursor-pointer accent-saffron" value={intellectLevel} onChange={(e) => setIntellectLevel(e.target.value)} />
+              <p className="mt-3 text-[9px] text-white/50 uppercase font-black tracking-widest text-center">Stability of Perception</p>
             </div>
           </div>
         )}
 
         {/* CHAT MODAL */}
         {chatOpen && (
-          <div className="fixed bottom-52 lg:bottom-32 right-8 z-[120] w-[90vw] sm:w-[420px] h-[600px] bg-indigo-950 border border-saffron/40 rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] backdrop-blur-3xl flex flex-col overflow-hidden animate-in zoom-in-95">
-            <div className="p-6 bg-saffron text-white flex justify-between items-center"><div className="flex items-center gap-3 text-lg"><Sparkles size={24} /><span className="font-black uppercase tracking-widest">Ask the Sage</span></div><button onClick={() => setChatOpen(false)}><X size={28} /></button></div>
-            <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar text-white">
-              {chatMessages.length === 0 && <p className="text-center text-white/30 italic mt-32 text-xl font-serif font-semibold leading-relaxed">"Seek and ye shall find the eternal wisdom of {activeModelData?.name || 'the Gita'}."</p>}
+          <div className="fixed bottom-52 lg:bottom-32 right-6 sm:right-8 z-[150] w-[90vw] sm:w-[420px] h-[550px] bg-indigo-950 border border-saffron/40 rounded-[2.5rem] sm:rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] backdrop-blur-3xl flex flex-col overflow-hidden animate-in zoom-in-95">
+            <div className="p-5 sm:p-6 bg-saffron text-white flex justify-between items-center"><div className="flex items-center gap-3 text-base sm:text-lg"><Sparkles size={20} /><span className="font-black uppercase tracking-widest">Ask the Sage</span></div><button onClick={() => setChatOpen(false)}><X size={24} /></button></div>
+            <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 custom-scrollbar text-white text-left">
+              {chatMessages.length === 0 && <p className="text-center text-white/30 italic mt-32 text-lg sm:text-xl font-serif">"Seek and ye shall find the eternal wisdom of {activeModelData?.name || 'the Gita'}."</p>}
               {chatMessages.map((m, i) => (
-                <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[85%] p-6 rounded-[2rem] text-lg ${m.role === 'user' ? 'bg-indigo-600 border border-indigo-400' : 'bg-indigo-900 font-serif italic border border-indigo-500/40'}`}>{m.text}</div></div>
+                <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[85%] p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] text-base sm:text-lg ${m.role === 'user' ? 'bg-indigo-600 border border-indigo-400' : 'bg-indigo-900 font-serif italic border border-indigo-500/40'}`}>{m.text}</div></div>
               ))}
-              {isChatLoading && <div className="bg-indigo-900/60 p-4 rounded-2xl animate-pulse text-white/50 italic text-base">Contemplating scripture...</div>}
+              {isChatLoading && <div className="bg-indigo-900/60 p-4 rounded-2xl animate-pulse text-white/50 italic text-sm sm:text-base">Contemplating scripture...</div>}
             </div>
-            <div className="p-8 border-t border-indigo-900 bg-deep/40">
-              <div className="relative flex items-center"><input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder="Type your inquiry..." className="w-full bg-deep border border-indigo-500 rounded-2xl py-5 px-6 text-white focus:border-saffron outline-none text-lg" /><button onClick={handleSendMessage} disabled={isChatLoading} className="absolute right-3 p-3 text-saffron hover:text-white transition-colors"><Send size={28} /></button></div>
+            <div className="p-6 sm:p-8 border-t border-indigo-900 bg-deep/40">
+              <div className="relative flex items-center"><input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder="Type inquiry..." className="w-full bg-deep border border-indigo-500 rounded-2xl py-4 sm:py-5 px-6 text-white focus:border-saffron outline-none text-base sm:text-lg" /><button onClick={handleSendMessage} disabled={isChatLoading} className="absolute right-3 p-3 text-saffron hover:text-white transition-colors"><Send size={24} /></button></div>
             </div>
           </div>
         )}
@@ -560,10 +563,10 @@ const App = () => {
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@1,400;1,700&family=Inter:wght@400;900&display=swap');
         .font-serif { font-family: 'Crimson Pro', serif; }
         .font-sans { font-family: 'Inter', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #312e81; border-radius: 20px; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 28px; width: 28px; border-radius: 50%; background: #f59e0b; cursor: pointer; border: 5px solid #020617; box-shadow: 0 0 25px rgba(245,158,11,0.6); }
-        .animate-spin-slow { animation: spin 12s linear infinite; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; background: #f59e0b; cursor: pointer; border: 4px solid #020617; box-shadow: 0 0 15px rgba(245,158,11,0.5); }
+        .animate-spin-slow { animation: spin 15s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}} />
     </div>
