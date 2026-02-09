@@ -205,7 +205,7 @@ const App = () => {
   const ModelRenderer = () => {
     if (!activeModelId) {
       return (
-        <div className="flex flex-col items-center p-6 sm:p-10 w-full max-w-6xl mx-auto select-none animate-in fade-in duration-500">
+        <div className="flex flex-col items-center p-6 sm:p-10 w-full max-w-6xl mx-auto select-none animate-in fade-in duration-500 min-h-[60vh] justify-center">
           <div className="text-center mb-12 sm:mb-16">
             <div className="w-24 h-24 sm:w-40 sm:h-40 mx-auto mb-8 border-[3px] border-dashed border-saffron/40 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(245,158,11,0.2)]">
               <Compass size={windowWidth < 640 ? 40 : 80} className="text-saffron" />
@@ -250,10 +250,9 @@ const App = () => {
       );
     }
 
-    // Individual Models with increased top padding to avoid header overlap
     if (activeModelId === 'atma-body') {
       return (
-        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-28 sm:pt-32">
+        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-24 sm:pt-32">
           <div className="relative flex flex-col items-center justify-center p-8 sm:p-12 bg-indigo-950 rounded-[2.5rem] sm:rounded-[3rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[700px]">
             <div className="absolute top-8 left-8 flex items-center gap-3 text-white">
               <Layers className="text-saffron" size={24} />
@@ -277,7 +276,7 @@ const App = () => {
                 </div>
               </div>
             </div>
-            <div className="w-full mt-10 px-2">
+            <div className="w-full mt-10 px-2 text-left">
               <div className="flex justify-between text-white text-[9px] font-bold uppercase tracking-widest mb-4"><span>Simulation</span><span>Verse 2.22</span></div>
               <input type="range" className="w-full h-1.5 bg-indigo-900 rounded-full appearance-none cursor-pointer accent-saffron" value={ageProgress * 100} onChange={(e) => setAgeProgress(e.target.value / 100)} />
             </div>
@@ -294,14 +293,15 @@ const App = () => {
         { label: "Equanimity", icon: <Layers size={14} /> },
         { label: "Purity", icon: <Sparkles size={14} /> }
       ];
+      const mandalaScale = windowWidth < 640 ? 0.75 : 1;
       return (
-        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-28 sm:pt-32">
+        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-24 sm:pt-32">
           <div className="relative flex flex-col items-center justify-center p-8 sm:p-12 bg-indigo-950 rounded-[2.5rem] sm:rounded-[3rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[700px]">
             <div className="absolute top-8 left-8 flex items-center gap-3 text-white">
               <RotateCcw className="text-saffron" size={24} />
               <h3 className="font-black text-xl uppercase tracking-tighter">Karma Cycle</h3>
             </div>
-            <div className="relative w-64 h-64 sm:w-96 sm:h-96 mt-20 mb-8 flex items-center justify-center">
+            <div className="relative w-64 h-64 sm:w-96 sm:h-96 mt-20 mb-8 flex items-center justify-center" style={{ transform: `scale(${mandalaScale})` }}>
               <div className="absolute inset-0 rounded-full border border-dashed border-indigo-700/50 animate-spin-slow" />
               <div className="z-10 w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-indigo-900 border border-saffron/40 flex flex-col items-center justify-center shadow-xl">
                 <RefreshCw className={`text-saffron mb-1 sm:mb-2 ${intellectLevel > 50 ? 'animate-spin' : ''}`} style={{ animationDuration: `${6 - (intellectLevel / 20)}s` }} size={windowWidth < 640 ? 18 : 24} />
@@ -338,19 +338,20 @@ const App = () => {
 
     if (activeModelId === 'stitha-prajna') {
       const q = activeModelData?.qualities?.[selectedQualityIndex] || { name: "Wisdom", highlight: "Detached Awareness", verse: "2.54" };
+      const mandalaScale = windowWidth < 640 ? 0.65 : windowWidth < 1024 ? 0.85 : 1;
       return (
-        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1500px] p-6 animate-in fade-in duration-500 pt-28 sm:pt-32">
+        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1500px] p-6 animate-in fade-in duration-500 pt-24 sm:pt-32">
           <div className="relative flex flex-col items-center justify-center p-8 sm:p-12 bg-indigo-950 rounded-[2.5rem] sm:rounded-[3rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[750px]">
             <div className="absolute top-8 left-8 flex items-center gap-3 text-white">
               <Waves className="text-saffron" size={24} />
               <h3 className="font-black text-xl uppercase tracking-tighter">Mastery Ladder</h3>
             </div>
-            <div className="relative w-full h-[400px] sm:h-[600px] flex items-center justify-center mt-16 sm:mt-20">
+            <div className="relative w-full h-[400px] sm:h-[600px] flex items-center justify-center mt-16 sm:mt-20" style={{ transform: `scale(${mandalaScale})` }}>
               <div className="absolute w-24 h-24 sm:w-40 sm:h-40 rounded-full border border-saffron/20 bg-indigo-900/60 flex items-center justify-center text-saffron font-black text-[9px] sm:text-xs uppercase tracking-widest text-center">Steady<br />Mind</div>
               {activeModelData?.qualities?.map((item, i) => {
                 const angle = (i * 360) / 18;
                 const active = selectedQualityIndex === i;
-                const dist = windowWidth < 640 ? 115 : 130;
+                const dist = 130;
                 return (
                   <button key={i} onClick={() => setSelectedQualityIndex(i)} className="absolute top-1/2 left-1/2 origin-left transition-all duration-300" style={{ transform: `rotate(${angle}deg) translateX(${dist}px)` }}>
                     <div className={`px-2 sm:px-4 py-1 sm:py-1.5 rounded-full border text-[7px] sm:text-[9px] font-black uppercase transition-all ${active ? 'bg-saffron text-indigo-950 border-white scale-125 z-50 shadow-lg' : 'bg-indigo-900/60 text-white border-indigo-500/30 hover:border-saffron/50'}`} style={{ transform: `rotate(-${angle}deg)` }}>
@@ -373,7 +374,7 @@ const App = () => {
     if (activeModelId === 'sat-asat') {
       const selectedLayer = activeModelData?.layers?.[selectedLayerIndex] || { name: "SAT", desc: "Eternal substrate" };
       return (
-        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-28 sm:pt-32">
+        <div className="flex flex-col lg:flex-row gap-10 items-start justify-center w-full max-w-[1400px] p-6 animate-in fade-in duration-500 pt-24 sm:pt-32">
           <div className="relative flex flex-col items-center justify-center p-8 sm:p-12 bg-indigo-950 rounded-[2.5rem] border border-indigo-500/30 shadow-2xl w-full lg:max-w-[700px]">
             <div className="absolute top-8 left-8 flex items-center gap-3 text-white">
               <Triangle className="text-saffron" size={24} />
@@ -407,7 +408,7 @@ const App = () => {
 
   const VerseSidebar = ({ verses }) => (
     <div className="w-full lg:w-[400px] space-y-6 lg:sticky lg:top-32 animate-in slide-in-from-right duration-700 mt-8 lg:mt-0">
-      <div className="flex items-center gap-3 mb-2 px-4 text-white">
+      <div className="flex items-center gap-3 mb-2 px-4 text-white text-left">
         <ScrollText className="text-saffron" size={windowWidth < 640 ? 24 : 32} />
         <h4 className="text-lg sm:text-2xl font-black uppercase tracking-widest">Scripture</h4>
       </div>
@@ -502,8 +503,8 @@ const App = () => {
           )}
         </div>
 
-        {/* MAIN CANVAS */}
-        <div className="flex-1 w-full min-h-screen flex items-center justify-center p-4 relative overflow-visible">
+        {/* MAIN CANVAS - MODIFIED FOR MOBILE ALIGNMENT */}
+        <div className={`flex-1 w-full flex ${!activeModelId ? 'items-center justify-center' : 'items-start justify-center'} p-4 relative overflow-visible min-h-screen`}>
           <div className="transition-all duration-700 ease-out w-full flex justify-center pb-32"
             style={{
               transform: `scale(${zoom})`,
@@ -515,7 +516,7 @@ const App = () => {
           </div>
         </div>
 
-        {/* CONTROLS AREA (TOGGLEABLE ON MOBILE) */}
+        {/* CONTROLS AREA */}
         {activeModelId && (
           <div className="fixed bottom-24 lg:bottom-10 right-6 sm:right-8 z-[140] flex flex-col items-end gap-3 sm:gap-6">
             <div className="flex gap-3">
@@ -528,11 +529,10 @@ const App = () => {
               <button onClick={() => setChatOpen(!chatOpen)} className="w-12 h-12 sm:w-16 sm:h-16 bg-saffron rounded-full flex items-center justify-center text-white shadow-[0_0_50px_rgba(245,158,11,0.5)] hover:scale-110 active:scale-95 transition-all"><MessageSquare size={windowWidth < 640 ? 20 : 32} /></button>
             </div>
 
-            {/* Buddhi Slider - Hidden by default on mobile unless toggled */}
             <div className={`w-[260px] sm:w-80 p-6 sm:p-8 bg-indigo-950 border border-indigo-500 rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl backdrop-blur-lg text-white transition-all duration-300 ${!showBuddhiOverlay && windowWidth < 1024 ? 'translate-y-20 opacity-0 pointer-events-none scale-95' : 'translate-y-0 opacity-100'}`}>
-              <div className="flex items-center justify-between mb-4 sm:mb-5">
-                <div className="flex items-center gap-3 font-black uppercase text-[10px] sm:text-xs tracking-widest"><div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-saffron animate-pulse" /> Buddhi</div>
-                <span className="text-lg sm:text-2xl font-mono font-black">{intellectLevel}%</span>
+              <div className="flex items-center justify-between mb-4 sm:mb-5 text-left">
+                <div className="flex items-center gap-3 font-black uppercase text-[10px] sm:text-xs tracking-widest text-white"><div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-saffron animate-pulse" /> Buddhi</div>
+                <span className="text-lg sm:text-2xl font-mono font-black text-white">{intellectLevel}%</span>
               </div>
               <input type="range" className="w-full h-1.5 bg-deep rounded-full appearance-none cursor-pointer accent-saffron" value={intellectLevel} onChange={(e) => setIntellectLevel(e.target.value)} />
               <p className="mt-3 text-[9px] text-white/50 uppercase font-black tracking-widest text-center">Stability of Perception</p>
@@ -543,7 +543,7 @@ const App = () => {
         {/* CHAT MODAL */}
         {chatOpen && (
           <div className="fixed bottom-52 lg:bottom-32 right-6 sm:right-8 z-[150] w-[90vw] sm:w-[420px] h-[550px] bg-indigo-950 border border-saffron/40 rounded-[2.5rem] sm:rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] backdrop-blur-3xl flex flex-col overflow-hidden animate-in zoom-in-95">
-            <div className="p-5 sm:p-6 bg-saffron text-white flex justify-between items-center"><div className="flex items-center gap-3 text-base sm:text-lg"><Sparkles size={20} /><span className="font-black uppercase tracking-widest">Ask the Sage</span></div><button onClick={() => setChatOpen(false)}><X size={24} /></button></div>
+            <div className="p-5 sm:p-6 bg-saffron text-white flex justify-between items-center"><div className="flex items-center gap-3 text-base sm:text-lg font-black uppercase tracking-widest text-white"><Sparkles size={20} /><span className="text-white">Ask the Sage</span></div><button onClick={() => setChatOpen(false)}><X size={24} className="text-white" /></button></div>
             <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 custom-scrollbar text-white text-left">
               {chatMessages.length === 0 && <p className="text-center text-white/30 italic mt-32 text-lg sm:text-xl font-serif">"Seek and ye shall find the eternal wisdom of {activeModelData?.name || 'the Gita'}."</p>}
               {chatMessages.map((m, i) => (
