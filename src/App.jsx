@@ -325,7 +325,7 @@ const App = () => {
                 const active = selectedQualityIndex === i;
                 return (
                   <button key={i} onClick={() => setSelectedQualityIndex(i)} className="absolute top-1/2 left-1/2 origin-left transition-all duration-300" style={{ transform: `rotate(${angle}deg) translateX(115px)` }}>
-                    <div className={`px-4 py-2 rounded-full border transition-all text-[10px] font-black uppercase tracking-tighter ${active ? 'bg-saffron text-indigo-950 border-white scale-125 z-50 shadow-[0_0_30px_rgba(255,255,255,0.4)]' : 'bg-indigo-900/60 text-white border-indigo-500/30 hover:border-saffron/50'}`} style={{ transform: `rotate(-${angle}deg)` }}>
+                    <div className={`px-4 py-2 rounded-full border transition-all text-[10px] font-black uppercase tracking-tighter ${active ? 'bg-saffron text-white border-white scale-125 z-50 shadow-[0_0_30px_rgba(255,255,255,0.4)]' : 'bg-indigo-900/60 text-white border-indigo-500/30 hover:border-saffron/50'}`} style={{ transform: `rotate(-${angle}deg)` }}>
                       {item.name}
                     </div>
                   </button>
@@ -339,7 +339,7 @@ const App = () => {
               <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-4">{q.name}</h2>
               <p className="text-xl text-white italic leading-relaxed border-l-4 border-saffron pl-8 mb-6">"{q.highlight}"</p>
               <div className="flex items-center gap-4">
-                <div className="px-5 py-2 bg-saffron text-indigo-950 rounded-xl text-xs font-black">VERSE {q.verse}</div>
+                <div className="px-5 py-2 bg-saffron text-white rounded-xl text-xs font-black">VERSE {q.verse}</div>
                 <div className="text-xs text-white font-black uppercase tracking-widest opacity-60">Steady Mind in All duality</div>
               </div>
             </div>
@@ -380,7 +380,7 @@ const App = () => {
       <aside className={`relative flex flex-col bg-indigo-950/80 border-r border-indigo-900/50 transition-all duration-500 z-50 ${isSidebarOpen ? 'w-96' : 'w-24'}`}>
         <div className="p-10 border-b border-indigo-900/50 flex items-center justify-between">
           <div className={`flex items-center gap-5 ${!isSidebarOpen && 'hidden'}`}>
-            <div className="p-3 bg-saffron rounded-2xl shadow-xl shadow-saffron/30"><Compass size={32} className="text-indigo-950" /></div>
+            <div className="p-3 bg-saffron rounded-2xl shadow-xl shadow-saffron/30"><Compass size={32} className="text-white" /></div>
             <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Library</h2>
           </div>
           <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-4 hover:bg-indigo-900 rounded-2xl text-white transition-all">
@@ -409,10 +409,10 @@ const App = () => {
                 <div className="space-y-3">
                   {ch.models.map(m => (
                     <button key={m.id} onClick={() => setActiveModelId(m.id)}
-                      className={`w-full text-left p-6 rounded-[2rem] flex items-center justify-between group transition-all border ${activeModelId === m.id ? 'bg-saffron border-saffron text-indigo-950 shadow-2xl' : 'bg-indigo-950/40 border-indigo-900 hover:border-saffron/40 text-white/70'}`}
+                      className={`w-full text-left p-6 rounded-[2rem] flex items-center justify-between group transition-all border ${activeModelId === m.id ? 'bg-saffron border-saffron text-white shadow-2xl' : 'bg-indigo-950/40 border-indigo-900 hover:border-saffron/40 text-white/70'}`}
                     >
                       <div className="flex flex-col">
-                        <span className={`text-base font-black uppercase leading-none mb-2 ${activeModelId === m.id ? 'text-indigo-950' : 'text-white'}`}>{m.name}</span>
+                        <span className={`text-base font-black uppercase leading-none mb-2 ${activeModelId === m.id ? 'text-white' : 'text-white'}`}>{m.name}</span>
                         <div className="flex items-center gap-3">
                           <span className={`text-[11px] font-black uppercase tracking-widest opacity-60`}>{m.type}</span>
                           {m.status === 'ready' ? <CheckCircle2 size={14} className="text-green-500" /> : <div className="w-2 h-2 rounded-full bg-indigo-800" />}
@@ -439,7 +439,7 @@ const App = () => {
             <button onClick={() => setZoom(prev => Math.min(2.5, prev + 0.1))} className="p-3 hover:bg-indigo-900 rounded-xl text-white transition-colors"><Maximize2 size={24} /></button>
           </div>
           {activeModelId && (
-            <button onClick={resetView} className="px-8 py-4 bg-saffron text-indigo-950 font-black text-sm uppercase rounded-2xl hover:bg-saffronBright transition-all shadow-xl active:scale-95 flex items-center gap-2">
+            <button onClick={resetView} className="px-8 py-4 bg-saffron text-white font-black text-sm uppercase rounded-2xl hover:bg-saffronBright transition-all shadow-xl active:scale-95 flex items-center gap-2">
               <RotateCw size={18} /> Clear Canvas
             </button>
           )}
@@ -476,11 +476,11 @@ const App = () => {
         {activeModelId && (
           <div className="fixed bottom-10 right-10 z-50 w-72 p-8 bg-indigo-950/90 border border-indigo-500/30 rounded-[2.5rem] backdrop-blur-xl shadow-2xl animate-in slide-in-from-bottom duration-500">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3 text-saffron font-black uppercase text-xs tracking-[0.2em]">
+              <div className="flex items-center gap-3 text-white font-black uppercase text-xs tracking-[0.2em]">
                 <div className="w-3 h-3 rounded-full bg-saffron animate-pulse shadow-[0_0_15px_#f59e0b]" />
                 Buddhi
               </div>
-              <span className="text-lg font-mono font-black text-saffron">{intellectLevel}%</span>
+              <span className="text-lg font-mono font-black text-white">{intellectLevel}%</span>
             </div>
             <input type="range" className="w-full h-2 bg-deep rounded-full appearance-none cursor-pointer accent-saffron" value={intellectLevel} onChange={(e) => setIntellectLevel(e.target.value)} />
             <p className="mt-4 text-[10px] text-white uppercase tracking-widest font-bold leading-tight">Refines spiritual perception and reveals the SAT.</p>
